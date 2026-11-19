@@ -17,7 +17,9 @@ const note = (s) => { log.push(s); console.log(s); };
 
 async function gh(p) {
   if (MOCK) { if (p in MOCK.api) return MOCK.api[p]; const e = new Error('404 ' + p); e.status = 404; throw e; }
-  const r = await fetch('https://api.github.com' + p, { headers: { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'hub-apps-robot', ...(TOKEN ? { Authorization: 'Bearer ' + TOKEN } : {}) } });
+  const base = { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'hub-apps-robot' };
+  let r = await fetch('https://api.github.com' + p, { headers: { ...base, ...(TOKEN ? { Authorization: 'Bearer ' + TOKEN } : {}) } });
+  if (r.status === 401 && TOKEN) r = await fetch('https://api.github.com' + p, { headers: base }); // chave vencida: segue só com o público
   if (!r.ok) { const e = new Error(p + ' -> ' + r.status); e.status = r.status; throw e; }
   return r.json();
 }
