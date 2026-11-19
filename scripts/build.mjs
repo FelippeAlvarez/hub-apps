@@ -46,6 +46,16 @@ async function listOwn() {
   publicOnly = true;
   return listPaged(`/users/${OWNER}/repos?per_page=100`);
 }
+
+// Texto de terceiros vai para dentro de um pedido ao Claude: tira comentários/HTML ocultos e caracteres invisíveis.
+function limpa(b64, max) {
+  let t = Buffer.from(b64 || '', 'base64').toString('utf8');
+  t = t.replace(/<!--[\s\S]*?-->/g, '').replace(/<img[^>]*>/gi, '').replace(/[\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]/g, '').replace(/\n{3,}/g, '\n\n').trim();
+  return t.length > max ? t.slice(0, max) + '\n[… trecho cortado …]' : t;
+}
+async function trecho(full, kind, max) {
+  try { const r = await gh(`/repos/${full}/${kind}`); return limpa(r.content, max) || null; } catch { return null; }
+}
 const pretty = (s) => s.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
 const cfg = JSON.parse(decryptStr(fs.readFileSync(path.join(ROOT, 'data', 'config.enc'), 'utf8'), PW));
@@ -82,6 +92,7 @@ if (publicOnly) {
     apps.push({ id: name.toLowerCase(), name: o.name || pretty(name), desc: o.desc || 'Sem descrição.', cat: o.cat || 'novos', tag: o.tag || 'Privado', url: o.url || null, repo: `https://github.com/${OWNER}/${name}`, priv: true, novo: false, fixo: true, pushed: null, launch: o.launch || null, note: o.note || 'Repositório privado — sem endereço público.' });
   }
 }
+for (const a of apps) if (!a.url && !a.fixo) { a.readme = await trecho(`${OWNER}/${a.repo.split('/').pop()}`, 'readme', 6000); a.licenca = await trecho(`${OWNER}/${a.repo.split('/').pop()}`, 'license', 3000); }
 apps.sort((a, b) => a.name.localeCompare(b.name, 'pt'));
 
 // ---------- Projetos externos ----------
@@ -95,8 +106,10 @@ for (const e of cfg.externos || []) {
     licApi = r.license?.spdx_id || null; stars = r.stargazers_count ?? null; pushed = r.pushed_at || null; html = r.html_url || html;
     if (r.archived) status = 'arquivado';
   } catch (err) { status = err.status === 404 ? 'nao_localizado' : 'sem_verificacao'; }
+  const readme = status === 'nao_localizado' ? null : await trecho(e.full, 'readme', 6000);
+  const licenca = status === 'nao_localizado' ? null : await trecho(e.full, 'license', 3000);
   if (status !== 'ok') problemas.push(`${e.full}: ${status}`);
-  externos.push({ id: 'x-' + short.toLowerCase(), n: e.n, name: short, full: e.full, grupo: e.grupo, tipo: e.tipo || 'app', desc: e.oque, lic: e.lic, licApi, reuso: e.reuso, aviso: e.aviso, req: e.req, status, stars, pushed, repo: html, mirror: mirrors.get('espelho-' + short.toLowerCase()) || e.mirror || null });
+  externos.push({ id: 'x-' + short.toLowerCase(), n: e.n, name: short, full: e.full, grupo: e.grupo, tipo: e.tipo || 'app', desc: e.oque, lic: e.lic, licApi, reuso: e.reuso, aviso: e.aviso, req: e.req, status, stars, pushed, repo: html, readme, licenca, mirror: mirrors.get('espelho-' + short.toLowerCase()) || e.mirror || null });
 }
 
 const data = { generated: new Date().toISOString(), apps, externos, config: cfg };
@@ -111,6 +124,6 @@ fs.writeFileSync(path.join(dist, 'index.html'), t);
 
 note(`Apps próprios: ${apps.length} (novos a classificar: ${novos.length ? novos.join(', ') : 'nenhum'})`);
 if (semPagina.length) note('Páginas fora do ar: ' + semPagina.join('; '));
-note(`Externos: ${externos.length}; espelhados na sua conta: ${externos.filter((x) => x.mirror).length}`);
+note(`Externos: ${externos.length}; espelhados na sua conta: ${externos.filter((x) => x.mirror).length}; com README lido: ${externos.filter((x) => x.readme).length}`);
 if (problemas.length) note('Externos com problema: ' + problemas.join('; '));
 if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, '### Central de Aplicativos\n' + log.map((l) => '- ' + l).join('\n') + '\n');
