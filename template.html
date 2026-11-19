@@ -172,6 +172,13 @@ dialog::backdrop{background:rgba(3,5,10,.7);backdrop-filter:blur(4px)}
 .meta{color:var(--dim);font-size:12px;margin-top:6px}
 textarea.cp{width:100%;margin-top:10px;min-height:120px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.3);color:#c9ccd6;padding:10px;font:12.5px/1.5 var(--sans);resize:vertical}
 .inst{color:#9fd6b0;font-size:12px}
+
+.meter{height:6px;border-radius:99px;background:rgba(255,255,255,.08);margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;border-radius:99px;transition:.25s}
+.pwin{width:100%;margin-top:8px;padding:12px 14px;border-radius:11px;border:1px solid var(--line);background:rgba(0,0,0,.3);color:var(--ink);font:inherit;font-size:15px;outline:none}
+.pwin:focus{border-color:rgba(200,169,106,.6)}
+ol.steps{padding-left:20px;margin-top:8px}
+ol.steps li{margin:6px 0}
 #app{display:none}
 @media (max-width:560px){
   .hero{padding-top:34px}
@@ -206,6 +213,7 @@ textarea.cp{width:100%;margin-top:10px;min-height:120px;border-radius:10px;borde
     <div class="brand"><div class="monogram">FA</div><div><b>Central de Aplicativos</b><small>Felippe Alvarez</small></div></div>
     <div class="top-actions">
       <button class="ghost" data-info="manual">Manual</button>
+      <button class="ghost" id="pwbtn">Senha</button>
       <button class="ghost" id="lock">Sair</button>
     </div>
   </header>
@@ -407,6 +415,61 @@ function openInfo(k){
 $("#dtabs").onclick=e=>{const t=e.target.closest("[data-tab]");if(!t)return;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));$("#dbody").innerHTML=INFO[t.dataset.tab][1]();$("#dbody").scrollTop=0};
 $("#dclose").onclick=()=>$("#dlg").close();
 $("#dlg").addEventListener("click",e=>{if(e.target===$("#dlg"))$("#dlg").close()});
+
+/* ---------- Trocar senha ---------- */
+function strength(p){
+  if(!p) return {b:0,t:"",c:"#555",w:0};
+  let pool=0; if(/[a-z]/.test(p))pool+=26; if(/[A-Z]/.test(p))pool+=26; if(/\d/.test(p))pool+=10; if(/[^A-Za-z0-9]/.test(p))pool+=33;
+  const bits=Math.round(p.length*Math.log2(pool||1));
+  if(bits<40) return {b:bits,t:"Fraca: qualquer pessoa com o arquivo consegue descobrir.",c:"#e58f8f",w:25};
+  if(bits<60) return {b:bits,t:"Razoável. Prefira 12 ou mais caracteres misturados.",c:"#e6cf9b",w:60};
+  return {b:bits,t:"Forte.",c:"#9fd6b0",w:100};
+}
+function genPass(){
+  const A="abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789", r=crypto.getRandomValues(new Uint32Array(16));
+  const s=[...r].map(n=>A[n%A.length]).join(""); return s.match(/.{4}/g).join("-");
+}
+async function encryptCfg(text,pw){
+  const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
+  const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);
+  const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt"]);
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(text)));
+  const out=new Uint8Array(28+ct.length); out.set(salt,0); out.set(iv,16); out.set(ct,28);
+  let s=""; for(let i=0;i<out.length;i+=8192) s+=String.fromCharCode.apply(null,out.subarray(i,i+8192));
+  return btoa(s);
+}
+function openPwd(){
+  const dlg=$("#dlg"); $("#dtitle").textContent="Alterar senha"; $("#dtabs").innerHTML="";
+  $("#dbody").innerHTML=`<p>Como o portal não tem servidor, a senha nova só passa a valer depois que você atualiza o GitHub. O app prepara tudo; você faz 2 cópias e colas, descritas abaixo.</p>
+  <input class="pwin" id="np1" type="password" placeholder="Nova senha" autocomplete="new-password">
+  <input class="pwin" id="np2" type="password" placeholder="Repita a nova senha" autocomplete="new-password">
+  <div class="meter"><i id="mt"></i></div><div class="meta" id="mtt"></div>
+  <div class="btnrow"><button class="btn" id="gen">Gerar senha forte</button><button class="btn gold" id="mk">Preparar troca</button></div>
+  <div id="pwout"></div>`;
+  const upd=()=>{const s=strength($("#np1").value);$("#mt").style.width=s.w+"%";$("#mt").style.background=s.c;$("#mtt").textContent=s.t};
+  $("#np1").oninput=upd;
+  $("#gen").onclick=()=>{const p=genPass();$("#np1").type=$("#np2").type="text";$("#np1").value=$("#np2").value=p;upd();$("#pwout").innerHTML='<div class="box warn"><b>Anote esta senha agora</b> (gerenciador de senhas ou papel). Se for perdida, será preciso reconfigurar o portal.</div>'};
+  $("#mk").onclick=async()=>{
+    const a=$("#np1").value,b=$("#np2").value,o=$("#pwout");
+    if(a.length<6){o.innerHTML='<div class="box warn">A senha precisa ter ao menos 6 caracteres.</div>';return}
+    if(a!==b){o.innerHTML='<div class="box warn">As duas senhas não são iguais.</div>';return}
+    if(!DATA.config){o.innerHTML='<div class="box warn">Esta versão do portal ainda não carrega a configuração. Aguarde a próxima atualização automática e tente de novo.</div>';return}
+    $("#mk").disabled=true;$("#mk").textContent="Preparando…";
+    const enc=await encryptCfg(JSON.stringify(DATA.config),a);
+    $("#mk").disabled=false;$("#mk").textContent="Preparar troca";
+    const w=strength(a).w<60?'<div class="box warn"><b>Atenção:</b> a senha é fraca. A lista de aplicativos fica criptografada no arquivo público, e uma senha curta pode ser descoberta por tentativas.</div>':"";
+    o.innerHTML=`${w}<ol class="steps">
+     <li><b>Segredo da senha.</b> No GitHub, abra o repositório <i>hub-apps</i> → <i>Settings</i> → <i>Secrets and variables</i> → <i>Actions</i> → <i>HUB_PASSWORD</i> → <i>Update</i> e cole a nova senha.</li>
+     <li><b>Arquivo de configuração.</b> No repositório, abra a pasta <i>data</i> → <i>config.enc</i> → lápis (Edit). Apague tudo, cole o texto abaixo e toque em <i>Commit changes</i>.</li>
+     <li>Em cerca de 2 minutos o portal se republica. Use a nova senha para entrar.</li></ol>
+     <textarea class="cp" id="cfgout" readonly>${enc}</textarea>
+     <div class="btnrow"><button class="btn gold" id="cpcfg">Copiar texto do arquivo</button></div>
+     <div class="meta">Faça o passo 1 antes do 2. Até o portal se republicar, a senha atual continua valendo.</div>`;
+    $("#cpcfg").onclick=async()=>{const t=$("#cfgout");try{await navigator.clipboard.writeText(t.value);$("#cpcfg").textContent="Copiado"}catch(e){t.select();$("#cpcfg").textContent="Selecionado: copie"}};
+  };
+  if(!dlg.open) dlg.showModal();
+}
+$("#pwbtn").onclick=openPwd;
 if("serviceWorker" in navigator&&location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>

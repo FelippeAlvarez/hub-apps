@@ -28,7 +28,7 @@ jobs:
       - name: Gerar a Central de Aplicativos
         run: node scripts/build.mjs
         env:
-          HUB_READ_TOKEN: ${{ secrets.HUB_READ_TOKEN }}
+          HUB_READ_TOKEN: ${{ secrets.HUB_READ_TOKEN || github.token }}
           HUB_PASSWORD: ${{ secrets.HUB_PASSWORD }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
