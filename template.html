@@ -130,7 +130,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:12p
 .soft{color:var(--dim)}
 .gh{position:relative;z-index:2;color:var(--dim);font-size:12px;border-bottom:1px dotted var(--dim)}
 .gh:hover{color:var(--gold2)}
-.stretch{position:absolute;inset:0;z-index:1}
+.stretch{position:absolute;inset:0;z-index:1;width:100%;height:100%;display:block}
 .empty{padding:50px 0;text-align:center;color:var(--dim)}
 
 /* ---------- Footer / dialog ---------- */
@@ -153,6 +153,25 @@ dialog::backdrop{background:rgba(3,5,10,.7);backdrop-filter:blur(4px)}
 .d-body h5:first-child{margin-top:0}
 .d-body ul{padding-left:20px}
 .pend{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:999px;font-size:11.5px;color:#e6cf9b;border:1px dashed rgba(200,169,106,.5)}
+
+.badge-novo{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#1a1408;background:linear-gradient(180deg,var(--gold2),var(--gold));border-radius:999px;padding:3px 9px;font-weight:700}
+.lic{font-size:10.5px;letter-spacing:.04em;border-radius:999px;padding:4px 10px;border:1px solid var(--line);color:var(--mute);max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lic.ok{color:#9fd6b0;border-color:rgba(120,200,150,.35)}
+.lic.warn{color:#e6cf9b;border-color:rgba(200,169,106,.5)}
+.lic.bad{color:#e9a0a0;border-color:rgba(230,130,130,.45)}
+.tagrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.sub-title{margin:22px 0 10px;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.btn{padding:11px 16px;border-radius:11px;border:1px solid var(--line);font-size:13.5px;color:var(--ink);background:var(--glass);transition:.2s;display:inline-block}
+.btn:hover{border-color:rgba(200,169,106,.55);color:var(--gold2)}
+.btn.gold{color:#1a1408;border-color:transparent;background:linear-gradient(180deg,var(--gold2),var(--gold));font-weight:600}
+.btn.gold:hover{color:#1a1408;filter:brightness(1.05)}
+.box{margin-top:12px;padding:12px 14px;border-radius:12px;background:rgba(0,0,0,.25);border:1px solid var(--line);font-size:13px;line-height:1.6}
+.box.warn{border-color:rgba(200,169,106,.4)}
+.box b{color:var(--ink)}
+.meta{color:var(--dim);font-size:12px;margin-top:6px}
+textarea.cp{width:100%;margin-top:10px;min-height:120px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.3);color:#c9ccd6;padding:10px;font:12.5px/1.5 var(--sans);resize:vertical}
+.inst{color:#9fd6b0;font-size:12px}
 #app{display:none}
 @media (max-width:560px){
   .hero{padding-top:34px}
@@ -230,38 +249,50 @@ dialog::backdrop{background:rgba(3,5,10,.7);backdrop-filter:blur(4px)}
 </dialog>
 
 <script>
-const VERSION="1.0.0", BUILD="2026-11-19";
-const PAYLOAD="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";
+const VERSION="1.1.0", BUILD="__BUILD__";
+const PAYLOAD="__PAYLOAD__";
+const ICO={
+  novos:'<path d="m12 3 2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7L12 3z"/>',
+  juridico:'<path d="M12 3v18M5 7h14M5 7l-3 7a4 4 0 0 0 6 0L5 7zm14 0-3 7a4 4 0 0 0 6 0l-3-7zM8 21h8"/>',
+  condominio:'<path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6M9 11h.01M15 11h.01"/>',
+  docs:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5zM14 3v5h5M9 13h6M9 17h4"/>',
+  golfe:'<path d="M12 3v14M12 3l7 3-7 3M7 21h10M9 21c0-2 6-2 6 0"/>',
+  pessoal:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+  externos:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'
+};
 const CATS={
   all:{n:"Todos"},
-  juridico:{n:"Jurídico",t:"Advocacia e processos",i:'<path d="M12 3v18M5 7h14M5 7l-3 7a4 4 0 0 0 6 0L5 7zm14 0-3 7a4 4 0 0 0 6 0l-3-7zM8 21h8"/>'},
-  condominio:{n:"Condomínio e Locação",t:"Imóveis, assembleias e contratos",i:'<path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6M9 11h.01M15 11h.01"/>'},
-  docs:{n:"Documentos e Ferramentas",t:"PDF, notas e utilitários",i:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5zM14 3v5h5M9 13h6M9 17h4"/>'},
-  golfe:{n:"Golfe",t:"Jogo e campo",i:'<path d="M12 3v14M12 3l7 3-7 3M7 21h10M9 21c0-2 6-2 6 0"/>'},
-  pessoal:{n:"Pessoal",t:"Uso do dia a dia",i:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'}
+  novos:{n:"Novos",t:"Detectados automaticamente, a classificar"},
+  juridico:{n:"Jurídico",t:"Advocacia e processos"},
+  condominio:{n:"Condomínio e Locação",t:"Imóveis, assembleias e contratos"},
+  docs:{n:"Documentos e Ferramentas",t:"PDF, notas e utilitários"},
+  golfe:{n:"Golfe",t:"Jogo e campo"},
+  pessoal:{n:"Pessoal",t:"Uso do dia a dia"},
+  externos:{n:"Externos",t:"Projetos de terceiros que acompanho"}
 };
-const INFO={
- sobre:["Sobre",()=>`<h5>Central de Aplicativos</h5><p>Portal pessoal que reúne, num só lugar, os aplicativos de Felippe Alvarez, com atalho para abrir cada um.</p><h5>Versão</h5><p>${VERSION} (${BUILD})</p><h5>Direitos</h5><p>© ${new Date().getFullYear()} Felippe Alvarez. Todos os direitos reservados.</p>`],
- manual:["Manual de uso",()=>`<ul><li><b>Abrir um aplicativo:</b> toque no cartão. O app abre em nova aba.</li><li><b>Buscar:</b> digite no campo de busca (no computador, a tecla <b>/</b> leva direto até ele).</li><li><b>Filtrar:</b> use os botões de categoria acima da lista.</li><li><b>Recentes:</b> os últimos apps abertos ficam em destaque no topo.</li><li><b>“Uso local” ou “Privado”:</b> o app não tem endereço público; o cartão não abre, mas o link “GitHub” leva ao repositório (exige login).</li><li><b>Sair:</b> botão no topo. Se marcou “Lembrar neste aparelho”, a senha fica guardada só neste navegador até você sair.</li><li><b>Instalar:</b> no navegador do celular, use “Adicionar à tela inicial”.</li></ul>`],
- licencas:["Licenças",()=>`<h5>Este portal</h5><p>Software de uso pessoal e privado. Todos os direitos reservados a Felippe Alvarez. Não é permitida a cópia ou redistribuição sem autorização.</p><h5>Componentes de terceiros</h5><p>Fontes <b>Cormorant Garamond</b> e <b>Inter</b>, distribuídas pelo Google Fonts sob a SIL Open Font License 1.1.</p><h5>Aplicativos listados</h5><p>Cada aplicativo tem sua própria licença e seus próprios termos, indicados no respectivo repositório.</p>`],
- termos:["Termos de uso",()=>`<p>Portal de uso exclusivamente pessoal, sem oferta a terceiros.</p><span class="pend">Pendente: texto definitivo dos termos de uso, a definir pelo titular.</span>`],
- privacidade:["Privacidade",()=>`<h5>O que este portal guarda</h5><ul><li>No seu aparelho: apps abertos recentemente e, se você marcar, a senha (no navegador).</li><li>Nenhum dado é enviado a servidores do portal; ele não tem servidor próprio.</li><li>A lista de aplicativos fica criptografada no arquivo e só é aberta com a senha.</li></ul><p>Ao abrir cada app, vale a política de privacidade dele.</p><span class="pend">Pendente: política de privacidade formal (LGPD), a definir pelo titular.</span>`],
- creditos:["Créditos",()=>`<h5>Autoria</h5><p>Idealização e titularidade: Felippe Alvarez.</p><h5>Desenvolvimento</h5><p>Construído com apoio do Claude (Anthropic).</p><h5>Tipografia</h5><p>Cormorant Garamond (Christian Thalmann / Catharsis Fonts) e Inter (Rasmus Andersson).</p>`]
-};
-
+const ORDER=["novos","juridico","condominio","docs","golfe","pessoal","externos"];
 const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const sess={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(e){}},del(k){try{sessionStorage.removeItem(k)}catch(e){}}};
+
 async function decrypt(pw){
   const raw=b64(PAYLOAD), salt=raw.slice(0,16), iv=raw.slice(16,28), ct=raw.slice(28);
   const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);
   const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
-  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,ct);
-  return JSON.parse(new TextDecoder().decode(pt));
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv},key,ct)));
 }
-let DATA=null, cat="all", term="";
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
-const sess={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(e){}},del(k){try{sessionStorage.removeItem(k)}catch(e){}}};
+let DATA=null, ALL=[], cat="all", term="";
+
+const INFO={
+ sobre:["Sobre",()=>`<h5>Central de Aplicativos</h5><p>Portal pessoal que reúne, num só lugar, os aplicativos de Felippe Alvarez, com atalho para abrir cada um.</p><h5>Versão</h5><p>${VERSION} (${BUILD})</p><h5>Atualização automática</h5><p>A lista é conferida todos os dias. Última verificação: ${DATA?new Date(DATA.generated).toLocaleString("pt-BR"):"—"}.</p><h5>Direitos</h5><p>© ${new Date().getFullYear()} Felippe Alvarez. Todos os direitos reservados.</p>`],
+ manual:["Manual de uso",()=>`<ul><li><b>Abrir um aplicativo:</b> toque no cartão. O app abre em nova aba.</li><li><b>Buscar e filtrar:</b> use o campo de busca (no computador, a tecla <b>/</b> leva até ele) e os botões de categoria.</li><li><b>Novos:</b> repositórios criados depois da última classificação aparecem em “Novos”, com a etiqueta NOVO. Para classificar, peça ao Claude ou dê ao repositório um tópico do GitHub (<i>hub-juridico</i>, <i>hub-condominio</i>, <i>hub-docs</i>, <i>hub-golfe</i>, <i>hub-pessoal</i>); <i>hub-ignorar</i> esconde.</li><li><b>Externos:</b> projetos de outras pessoas. O cartão mostra a licença e avisos. Eles não abrem no navegador: o cartão leva aos detalhes.</li><li><b>Instalar um app:</b> em “Detalhes”, use “Pedir instalação ao Claude”. O hub copia um pedido pronto; cole no Claude com o aplicativo do computador aberto. O Claude explica requisitos e riscos e só instala depois do seu ok. O hub não instala nada sozinho.</li><li><b>Depois de instalado:</b> marque “Já instalei”. O cartão passa a mostrar “Instalado”. Ele só vira botão de abrir se o app tiver um endereço de abertura cadastrado (por exemplo, um endereço local); caso contrário, abra pelo menu Iniciar ou pelo atalho.</li><li><b>Sair:</b> botão no topo. Se marcou “Lembrar neste aparelho”, a senha fica só neste navegador até você sair.</li></ul>`],
+ licencas:["Licenças",()=>{const ex=(DATA?DATA.externos:[]).map(x=>`<li><b>${esc(x.full)}</b>: ${esc(x.lic)}</li>`).join("");return `<h5>Este portal</h5><p>Software de uso pessoal e privado. Todos os direitos reservados a Felippe Alvarez. Não é permitida a cópia ou redistribuição sem autorização.</p><h5>Componentes de terceiros</h5><p>Fontes <b>Cormorant Garamond</b> e <b>Inter</b> (Google Fonts, SIL Open Font License 1.1).</p><h5>Aplicativos listados</h5><p>Cada aplicativo tem sua própria licença, indicada no repositório.</p>${ex?`<h5>Projetos externos acompanhados</h5><p>Licença conforme levantamento (a leitura do arquivo LICENSE prevalece):</p><ul>${ex}</ul>`:""}`}],
+ termos:["Termos de uso",()=>`<p>Portal de uso exclusivamente pessoal, sem oferta a terceiros.</p><span class="pend">Pendente: texto definitivo dos termos de uso, a definir pelo titular.</span>`],
+ privacidade:["Privacidade",()=>`<h5>O que este portal guarda</h5><ul><li>No seu aparelho: apps abertos recentemente, apps marcados como instalados e, se você marcar, a senha (no navegador).</li><li>Nenhum dado é enviado a servidores do portal; ele não tem servidor próprio.</li><li>A lista de aplicativos fica criptografada no arquivo e só é aberta com a senha.</li></ul><p>Ao abrir cada app, vale a política de privacidade dele.</p><span class="pend">Pendente: política de privacidade formal (LGPD), a definir pelo titular.</span>`],
+ creditos:["Créditos",()=>`<h5>Autoria</h5><p>Idealização e titularidade: Felippe Alvarez.</p><h5>Desenvolvimento</h5><p>Construído com apoio do Claude (Anthropic).</p><h5>Tipografia</h5><p>Cormorant Garamond (Christian Thalmann / Catharsis Fonts) e Inter (Rasmus Andersson).</p><h5>Projetos externos</h5><p>Os projetos da seção “Externos” pertencem aos seus respectivos autores e licenças.</p>`]
+};
 
 async function tryUnlock(pw,remember){
   try{ DATA=await decrypt(pw); }catch(e){ return false; }
@@ -277,42 +308,92 @@ $("#gform").addEventListener("submit",async e=>{
 $("#lock").onclick=()=>{store.del("hub.pw");sess.del("hub.pw");location.reload()};
 (async()=>{ const p=store.get("hub.pw")||sess.get("hub.pw"); if(p&&!(await tryUnlock(p,!!store.get("hub.pw")))){store.del("hub.pw");sess.del("hub.pw")} })();
 
+const installed=()=>JSON.parse(store.get("hub.installed")||"[]");
 function start(){
   const h=new Date().getHours(); $("#greet").textContent=(h<5?"Boa madrugada":h<12?"Bom dia":h<18?"Boa tarde":"Boa noite")+", Felippe";
   $("#yr").textContent=new Date().getFullYear();
-  const apps=DATA.apps, on=apps.filter(a=>a.url).length;
-  $("#stats").innerHTML=`<div class="stat"><b>${apps.length}</b><span>Aplicativos</span></div><div class="stat"><b>${on}</b><span>Com acesso direto</span></div><div class="stat"><b>${Object.keys(CATS).length-1}</b><span>Áreas</span></div>`;
-  $("#chips").innerHTML=Object.entries(CATS).map(([k,v])=>`<button class="chip${k===cat?" on":""}" data-cat="${k}">${v.n}</button>`).join("");
+  ALL=[...DATA.apps.map(a=>({...a,ext:false})),...DATA.externos.map(x=>({...x,ext:true,cat:"externos",url:null,tag:x.tipo==="skill"?"Skill":"Externo"}))];
+  const own=DATA.apps, on=own.filter(a=>a.url).length, nv=own.filter(a=>a.cat==="novos").length;
+  $("#stats").innerHTML=`<div class="stat"><b>${own.length}</b><span>Meus aplicativos</span></div><div class="stat"><b>${on}</b><span>Com acesso direto</span></div><div class="stat"><b>${DATA.externos.length}</b><span>Externos</span></div>${nv?`<div class="stat"><b>${nv}</b><span>Novos</span></div>`:""}`;
+  const cats=["all",...ORDER.filter(k=>ALL.some(a=>a.cat===k))];
+  $("#chips").innerHTML=cats.map(k=>`<button class="chip${k===cat?" on":""}" data-cat="${k}">${CATS[k].n}</button>`).join("");
   $("#chips").onclick=e=>{const b=e.target.closest("[data-cat]");if(!b)return;cat=b.dataset.cat;document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c===b));render()};
   $("#q").oninput=e=>{term=e.target.value.trim().toLowerCase();render()};
   addEventListener("keydown",e=>{if(e.key==="/"&&document.activeElement.tagName!=="INPUT"&&!$("#dlg").open){e.preventDefault();$("#q").focus()}});
   render();
 }
 const ARROW='<svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+function licClass(a){
+  const l=(a.lic||"").toLowerCase();
+  if(a.status==="nao_localizado") return "bad";
+  if(/noncommercial|não verificada|composta|duix|agpl|condicion|confirmar/.test(l+" "+(a.reuso||"").toLowerCase())) return /noncommercial/.test(l)?"bad":"warn";
+  return "ok";
+}
 function card(a,i){
-  const c=CATS[a.cat], live=!!a.url;
-  return `<article class="card${live?"":" off"}" style="animation-delay:${Math.min(i,12)*45}ms" data-id="${a.id}">
-    ${live?`<a class="stretch" href="${esc(a.url)}" target="_blank" rel="noopener" data-open="${a.id}" aria-label="Abrir ${esc(a.name)}"></a>`:""}
-    <div class="c-head"><div class="ico"><svg viewBox="0 0 24 24">${c.i}</svg></div><span class="tag">${esc(a.tag||"")}</span></div>
+  const c=ICO[a.cat]||ICO.docs, inst=installed().includes(a.id);
+  const direct=!!a.url, launch=inst&&a.launch;
+  const head=a.ext
+    ? `<div class="tagrow"><span class="lic ${licClass(a)}" title="${esc(a.lic)}">${esc((a.lic||"").replace(/ \(.*\)/,""))}</span></div>`
+    : `<div class="tagrow">${a.novo?'<span class="badge-novo">Novo</span>':""}<span class="tag">${esc(a.tag||"")}</span></div>`;
+  let foot;
+  if(direct) foot=`<span class="open">Abrir ${ARROW}</span>`;
+  else if(launch) foot=`<a class="open" style="position:relative;z-index:2" href="${esc(a.launch)}" target="_blank" rel="noopener">Abrir app ${ARROW}</a>`;
+  else foot=`<span class="soft">${inst?'<span class="inst">✓ Instalado</span>':"Ver detalhes"}</span>`;
+  const links=a.ext?`<span><a class="gh" href="${esc(a.repo)}" target="_blank" rel="noopener">GitHub</a></span>`:`<a class="gh" href="${esc(a.repo)}" target="_blank" rel="noopener">GitHub</a>`;
+  return `<article class="card${direct?"":" off"}" style="animation-delay:${Math.min(i,12)*45}ms">
+    ${direct?`<a class="stretch" href="${esc(a.url)}" target="_blank" rel="noopener" data-open="${esc(a.id)}" aria-label="Abrir ${esc(a.name)}"></a>`:`<button class="stretch" data-detail="${esc(a.id)}" aria-label="Detalhes de ${esc(a.name)}"></button>`}
+    <div class="c-head"><div class="ico"><svg viewBox="0 0 24 24">${c}</svg></div>${head}</div>
     <div><h4>${esc(a.name)}</h4></div>
     <p>${esc(a.desc)}${a.note?` <span class="soft">${esc(a.note)}</span>`:""}</p>
-    <div class="c-foot">${live?`<span class="open">Abrir ${ARROW}</span>`:`<span class="soft">Uso local</span>`}<a class="gh" href="${esc(a.repo)}" target="_blank" rel="noopener">GitHub</a></div>
+    <div class="c-foot">${foot}${links}</div>
   </article>`;
 }
 function render(){
-  const apps=DATA.apps.filter(a=>(cat==="all"||a.cat===cat)&&(!term||(a.name+" "+a.desc+" "+CATS[a.cat].n).toLowerCase().includes(term)));
-  const rec=JSON.parse(store.get("hub.recent")||"[]").map(id=>DATA.apps.find(a=>a.id===id&&a.url)).filter(Boolean).slice(0,4);
+  const ok=a=>(cat==="all"||a.cat===cat)&&(!term||(a.name+" "+a.desc+" "+(a.grupo||"")+" "+(a.lic||"")+" "+CATS[a.cat].n).toLowerCase().includes(term));
+  const apps=ALL.filter(ok);
+  const rec=JSON.parse(store.get("hub.recent")||"[]").map(id=>ALL.find(a=>a.id===id&&a.url)).filter(Boolean).slice(0,4);
   $("#recent").innerHTML=(!term&&cat==="all"&&rec.length)?`<div class="sec-title"><h3>Recentes</h3><span>últimos abertos</span></div><div class="grid">${rec.map(card).join("")}</div>`:"";
   let html="", n=0;
   if(!apps.length) html='<div class="empty">Nenhum aplicativo encontrado.</div>';
-  else for(const k of Object.keys(CATS).filter(k=>k!=="all")){
+  else for(const k of ORDER){
     const g=apps.filter(a=>a.cat===k); if(!g.length)continue;
-    html+=`<div class="sec-title"><h3>${CATS[k].n}</h3><span>${CATS[k].t}</span></div><div class="grid">${g.map(a=>card(a,n++)).join("")}</div>`;
+    html+=`<div class="sec-title"><h3>${CATS[k].n}</h3><span>${CATS[k].t}</span></div>`;
+    if(k==="externos"){
+      const groups=[...new Set(g.map(a=>a.grupo))];
+      for(const gr of groups) html+=`<div class="sub-title">${esc(gr)}</div><div class="grid">${g.filter(a=>a.grupo===gr).map(a=>card(a,n++)).join("")}</div>`;
+    } else html+=`<div class="grid">${g.map(a=>card(a,n++)).join("")}</div>`;
   }
   $("#list").innerHTML=html;
 }
+function prompt(a){
+  return `Quero instalar no meu computador o aplicativo «${a.name}» (${a.repo}).\nAntes de qualquer ação: leia o README e a licença e me diga requisitos, espaço em disco, riscos e se o meu computador comporta. Espere o meu “pode instalar”. Não execute nada que venha do repositório sem o meu ok.\nDepois de instalado, me diga como abrir o app e se há um endereço de abertura (local ou atalho) para cadastrar na Central de Aplicativos.`;
+}
+function openDetail(id){
+  const a=ALL.find(x=>x.id===id); if(!a) return;
+  const inst=installed().includes(a.id), dlg=$("#dlg");
+  $("#dtitle").textContent=a.name; $("#dtabs").innerHTML="";
+  const st={ok:"",nao_localizado:'<div class="box warn"><b>Não localizado no GitHub</b> na última verificação. O repositório pode ter sido removido ou renomeado.</div>',arquivado:'<div class="box warn"><b>Arquivado</b>: o autor não o atualiza mais.</div>',sem_verificacao:'<div class="meta">Não foi possível verificar este repositório na última atualização.</div>'}[a.status||"ok"];
+  let h=`<p>${esc(a.desc)}</p>`;
+  if(a.ext){
+    h+=`<div class="meta">${esc(a.grupo)} · item ${esc(a.n)}</div>
+    <div class="box"><b>Licença:</b> ${esc(a.lic)}${a.licApi?` <span class="soft">(GitHub detectou: ${esc(a.licApi)})</span>`:""}<br><b>Reaproveitar em app:</b> ${esc(a.reuso)}<br><span class="soft">A licença detectada não substitui a leitura do arquivo LICENSE.</span></div>
+    ${a.aviso?`<div class="box warn"><b>Atenção:</b> ${esc(a.aviso)}</div>`:""}
+    <div class="box"><b>${a.tipo==="skill"?"O que é":"Requisitos de instalação"}:</b> ${esc(a.req)}${a.tipo==="skill"?"<br>Pacote de instruções para agentes de IA; não é um programa.":""}</div>${st}
+    <div class="meta">${a.mirror?`Espelhado na sua conta: <a class="gh" href="${esc(a.mirror)}" target="_blank" rel="noopener">abrir espelho</a>`:"Ainda não espelhado na sua conta."}</div>`;
+  } else {
+    h+=`<div class="box">${esc(a.note||"Este app não tem endereço público para abrir no navegador.")}</div>`;
+  }
+  h+=`<div class="box"><b>Como a instalação funciona:</b> o hub não instala programas sozinho (o navegador não permite). Toque em “Pedir instalação ao Claude”, cole o pedido no Claude com o aplicativo do computador aberto, e ele só instala depois do seu ok. Quando terminar, marque “Já instalei”.</div>
+  <textarea class="cp" id="cptxt" readonly>${esc(prompt(a))}</textarea>
+  <div class="btnrow"><button class="btn gold" id="cpbtn">Pedir instalação ao Claude</button><button class="btn" id="insbtn">${inst?"Desmarcar instalado":"Já instalei"}</button><a class="btn" href="${esc(a.repo)}" target="_blank" rel="noopener">Ver no GitHub</a></div>`;
+  $("#dbody").innerHTML=h; $("#dbody").scrollTop=0;
+  $("#cpbtn").onclick=async()=>{const t=$("#cptxt");try{await navigator.clipboard.writeText(t.value);$("#cpbtn").textContent="Copiado. Cole no Claude."}catch(e){t.select();$("#cpbtn").textContent="Selecionado: copie e cole no Claude."}};
+  $("#insbtn").onclick=()=>{let l=installed().filter(x=>x!==a.id);if(!inst)l.push(a.id);store.set("hub.installed",JSON.stringify(l));dlg.close();render()};
+  if(!dlg.open) dlg.showModal();
+}
 document.addEventListener("click",e=>{
   const o=e.target.closest("[data-open]"); if(o){const id=o.dataset.open;let r=JSON.parse(store.get("hub.recent")||"[]").filter(x=>x!==id);r.unshift(id);store.set("hub.recent",JSON.stringify(r.slice(0,8)));setTimeout(render,300)}
+  const d=e.target.closest("[data-detail]"); if(d) openDetail(d.dataset.detail);
   const i=e.target.closest("[data-info]"); if(i) openInfo(i.dataset.info);
 });
 document.addEventListener("pointermove",e=>{const c=e.target.closest&&e.target.closest(".card");if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty("--mx",(e.clientX-r.left)+"px");c.style.setProperty("--my",(e.clientY-r.top)+"px")});
